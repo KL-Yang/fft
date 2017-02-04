@@ -7,4 +7,9 @@
 #
 ARCH="arch=compute_20,code=sm_30"
 
-nvcc -gencode $ARCH -c drive.cu
+gcc  -std=gnu99 -c utility_cpu.c -W -Wall
+nvcc -gencode $ARCH -c utility_gpu.cu
+
+#gcc  -std=gnu99 -c fftw_base.c -W -Wall
+#gcc  -std=gnu99 -c fftw_many.c -W -Wall
+#nvcc -gencode $ARCH -c drive.cu

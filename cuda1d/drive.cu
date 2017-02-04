@@ -13,6 +13,9 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
         if (abort) exit(code);
     }
 }
+#define ID_LEN  16
+
+typedef struct gputimer_struct * gputimer_h;
 
 /**
  * repeat is used to control doing something or just measure overhead
@@ -26,10 +29,10 @@ void cuda_fft1d_r2c(cufftHandle plan, float *pi, int nr, int nmemb, complex floa
     CCK(cudaMalloc((void**)&d_out, sizeof(cufftComplex)*nr*nmemb));
     CCK(cudaMemcpy(d_inp, pi, sizeof(float)*nr*nmemb, cudaMemcpyHostToDevice));
 
-    cufftResult_t code;
-    code = cufftExecR2C(plan, d_inp, d_out);
-    assert(code==CUFFT_SUCCESS);
-//  CCK(cudaDeviceSynchronize());
+    for(int i=0; i<repeat; i++) {
+        cufftResult_t code = cufftExecR2C(plan, d_inp, d_out);
+        assert(code==CUFFT_SUCCESS);
+    }
 
     CCK(cudaMemcpy(po, d_out, sizeof(cufftComplex)*nc*nmemb, cudaMemcpyDeviceToHost));
     CCK(cudaFree(d_inp));
@@ -38,13 +41,20 @@ void cuda_fft1d_r2c(cufftHandle plan, float *pi, int nr, int nmemb, complex floa
 
 cufftHandle cuda_fft1d_plan(int nr, int howmany)
 {
+    float elapsedTime; cudaEvent_t start, stop;
+    cudaEventCreate(&start); cudaEventRecord(start,0);
+
     cufftHandle plan; int nc=nr/2+1;
 
-    cufftResult_t code;
-    code = cufftPlanMany(&plan, 1, &nr, &nr, 1, nr, &nc, 1, nc, CUFFT_R2C, howmany);
+    cufftResult_t code = cufftPlanMany(&plan, 1, &nr, &nr, 1, nr, &nc, 1, nc, CUFFT_R2C, howmany);
     assert(code==CUFFT_SUCCESS);
-    return plan;
 
+    cudaEventCreate(&stop); cudaEventRecord(stop,0);
+    cudaEventSynchronize(stop);
+    cudaEventElapsedTime(&elapsedTime, start,stop);
+    printf("Elapsed time : %f ms\n" ,elapsedTime);
+
+    return plan;
 }
 
 void cuda_fft1d_destroy(cufftHandle plan) 
