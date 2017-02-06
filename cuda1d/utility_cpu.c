@@ -39,6 +39,18 @@ void cputimer_pause(cputimer_h h)
     t->stime += ts;
 }
 
+float cputimer_utime(cputimer_h h)
+{
+    cputimer_t *t = (cputimer_t*)h;
+    return (t->utime);
+}
+
+float cputimer_stime(cputimer_h h)
+{
+    cputimer_t *t = (cputimer_t*)h;
+    return (t->stime);
+}
+
 void cputimer_done(cputimer_h h)
 {
     cputimer_t *t = (cputimer_t*)h;

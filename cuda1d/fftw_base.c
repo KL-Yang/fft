@@ -1,15 +1,12 @@
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <fftw3.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <complex.h>
 #include <math.h>
+#include "cpu_func.h"
 
-/**
- * Valid if the FFT gives correct result by compare with fftw!
- * */
 void fftw_fft1d_plan(fftwf_plan *p, int nr)
 {
     float *pr; complex float *pc; int nc=nr/2+1;
@@ -20,13 +17,20 @@ void fftw_fft1d_plan(fftwf_plan *p, int nr)
     free(pr); free(pc);
 }
 
-void fftw_fft1d_r2c(fftwf_plan p, float *pr, int nr, int nmemb, 
-        complex float *po, int repeat)
+void fftw_fft1d_r2c(fftwf_plan p, float *pr, int rdist, int nmemb, 
+        complex float *po, int cdist, int repeat)
 {
-    int nc = nr/2+1;
     for(int i=0; i<repeat; i++) 
         for(int j=0; j<nmemb; j++) 
-            fftwf_execute_dft_r2c(p, pr+j*nr, (fftwf_complex*)(po+j*nc));
+            fftwf_execute_dft_r2c(p, pr+j*rdist, (fftwf_complex*)(po+j*cdist));
+}
+
+void fftw_fft1d_c2r(fftwf_plan p, complex float *po, int cdist, int nmemb,
+        float *pr, int rdist, int repeat)
+{
+    for(int i=0; i<repeat; i++) 
+        for(int j=0; j<nmemb; j++) 
+            fftwf_execute_dft_c2r(p, (fftwf_complex*)(po+j*cdist), pr+j*rdist);
 }
 
 void fftw_fft1d_destroy(fftwf_plan *p)
