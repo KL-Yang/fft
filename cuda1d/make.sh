@@ -11,8 +11,9 @@ NFLAG="-gencode $ARCH"
 
 gcc  $CFLAG -c utility_cpu.c 
 gcc  $CFLAG -c fftw_base.c 
-gcc  $CFLAG -c valid.c
-gcc -o valid utility_cpu.o fftw_base.o valid.o -lfftw3f -lm
+gcc  $CFLAG -c fftw_many.c 
+gcc  $CFLAG -c valid_base.c
+gcc -o valid_base utility_cpu.o fftw_base.o valid.o -lfftw3f -lm
 
 nvcc $NFLAG -c utility_gpu.cu
 
