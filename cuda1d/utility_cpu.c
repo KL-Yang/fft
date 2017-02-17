@@ -58,3 +58,20 @@ void cputimer_done(cputimer_h h)
             t->stime, t->utime);
     free(t);
 }
+
+int isfftsize(int size, int *base, int n)
+{
+    int i;
+    while(size!=1) {
+        for(i=0; i<n; i++)
+          if(size%base[i]==0) {
+              size = size/base[i];
+              break;
+          }
+        if(i==n)
+          return 0;
+    };
+    return 1;
+}
+
+
