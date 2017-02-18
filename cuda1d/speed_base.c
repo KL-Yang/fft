@@ -1,5 +1,4 @@
 #include "common.h"
-#include "cpu_func.h"
 
 /**
  * @param pool_size : buffer size in MB for fourier transform

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <complex.h>
 #include <math.h>
-#include "cpu_func.h"
+#include "common.h"
 
 void fftw1d_base_plan(fftwf_plan *p, int nr)
 {

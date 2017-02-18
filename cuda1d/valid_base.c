@@ -1,6 +1,5 @@
 #include <math.h>
 #include "common.h"
-#include "cpu_func.h"
 
 static void run_valid(int nr)
 {
