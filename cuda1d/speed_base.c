@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
     repeat = atoi(argv[3]);
 
     cputimer_h t0, t1;
-    float u0, s0, u1, s1;
+    float time0, time1;
 
     run_test(nr, howmany, 0);   //warm up the plan!
 
@@ -62,25 +62,20 @@ int main(int argc, char * argv[])
     cputimer_start(t0);
     run_test(nr, howmany, 0);
     cputimer_pause(t0);
-    u0 = cputimer_utime(t0);
-    s0 = cputimer_stime(t0);
-    cputimer_done(t0);
+    time0 = cputimer_done(t0);
 
     cputimer_init(&t1, "Measure");
     cputimer_start(t1);
     run_test(nr, howmany, repeat);
     cputimer_pause(t1);
-    u1 = cputimer_utime(t1);
-    s1 = cputimer_stime(t1);
-    cputimer_done(t1);
+    time1 = cputimer_done(t1);
 
     if(verbose) {
         printf(">CMD: %s nr=%d howmany=%d repeat=%d\n", argv[0], nr, howmany, repeat);
-        printf(">INF: aligned nr=%d(%d) nc=%d(%d)\n", anr, nr, anc, nc);
-        printf("utime=%9.1f stime=%9.1f\n", u1-u0, s1-s0);
+        printf(">INF: aligned nr=%d(%d) nc=%d(%d) time=%9.1fms\n", anr, nr, anc, nc, time1-time0);
     }
 
-    float tps = (howmany*repeat*1000.0f)/(u1+s1-u0-s0);
+    float tps = (howmany*repeat*1000.0f)/(time1-time0);
     printf("%8d, %8d, %8d, %9.1f\n", nr, howmany, repeat, tps);
 
     return 0;
