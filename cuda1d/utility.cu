@@ -47,27 +47,11 @@ float cputimer_done(cputimer_h h)
 {
     float total;
     cputimer_t *t = (cputimer_t*)h;
-    printf(" <%16s>: stime: %9.1f ms, utime: %9.1f\n", t->id, t->stime, t->utime);
+    printf("#<%16s>: stime: %9.1f ms, utime: %9.1f\n", t->id, t->stime, t->utime);
     total = t->stime+t->utime;
     free(t);
     return total;
 }
-
-int isfftsize(int size, int *base, int n)
-{
-    int i;
-    while(size!=1) {
-        for(i=0; i<n; i++)
-          if(size%base[i]==0) {
-              size = size/base[i];
-              break;
-          }
-        if(i==n)
-          return 0;
-    };
-    return 1;
-}
-
 
 #define CCK(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
@@ -114,7 +98,7 @@ float gputimer_done(gputimer_h h)
 {
     float total;
     gputimer_t *t = (gputimer_t*)h;
-    printf(" <%16s>: Elapsed time: %9.1f ms\n", t->id, t->sum);
+    printf("#<%16s>: Elapsed time: %9.1f ms\n", t->id, t->sum);
     total = t->sum;
     CCK(cudaEventDestroy(t->mark));
     free(t);

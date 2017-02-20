@@ -18,8 +18,6 @@ typedef struct gputimer_struct * gputimer_h;
 typedef struct cudaplan_struct * cudaplan_h;
 typedef struct fftwplan_struct * fftwplan_h;
 
-int isfftsize(int size, int *base, int n);
-
 void cputimer_init(cputimer_h *h, const char *id);
 void cputimer_start(cputimer_h h);
 void cputimer_pause(cputimer_h h);
