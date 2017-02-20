@@ -3,6 +3,10 @@
 
 typedef struct {
     cufftHandle     plan;
+    int             fftnr;
+    int             rskip;      //
+    int             cskip;
+    int             howmany;
 } cudaplan_t;
 
 #define CCK(ans) { gpuAssert((ans), __FILE__, __LINE__); }
@@ -18,31 +22,35 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 /**
  * repeat is used to control doing something or just measure overhead
  */
-void cuda1d_r2c(cudaplan_h h, float *pi, int nr, int nmemb, complex float *po, int repeat)
+void cuda1d_r2c(cudaplan_h h, float *pi, complex float *po, int repeat)
 {
     float *d_inp; cudaplan_t *t = (cudaplan_t*)h;
-    cufftComplex *d_out; int nc = nr/2+1;
+    cufftComplex *d_out; int nc = t->fftnr/2+1;
 
-    CCK(cudaMalloc((void**)&d_inp, sizeof(float)*nr*nmemb));
-    CCK(cudaMalloc((void**)&d_out, sizeof(cufftComplex)*nr*nmemb));
-    CCK(cudaMemcpy(d_inp, pi, sizeof(float)*nr*nmemb, cudaMemcpyHostToDevice));
+    CCK(cudaMalloc((void**)&d_inp, sizeof(float)*t->fftnr*t->howmany));
+    CCK(cudaMalloc((void**)&d_out, sizeof(cufftComplex)*t->fftnr*t->howmany));
+    CCK(cudaMemcpy(d_inp, pi, sizeof(float)*t->fftnr*t->howmany, cudaMemcpyHostToDevice));
+    CCK(cudaMemset(d_out, 0, sizeof(float)*t->fftnr*t->howmany));
 
     for(int i=0; i<repeat; i++) {
         cufftResult_t code = cufftExecR2C(t->plan, d_inp, d_out);
         assert(code==CUFFT_SUCCESS);
     }
 
-    CCK(cudaMemcpy(po, d_out, sizeof(cufftComplex)*nc*nmemb, cudaMemcpyDeviceToHost));
+    CCK(cudaMemcpy(po, d_out, sizeof(cufftComplex)*nc*t->howmany, cudaMemcpyDeviceToHost));
     CCK(cudaFree(d_inp));
     CCK(cudaFree(d_out));
 }
 
-void cuda1d_plan(cudaplan_h *h, int nr, int howmany)
+void cuda1d_plan(cudaplan_h *h, int fftnr, int rskip, int cskip, int howmany)
 {
-    cudaplan_t *t; int nc=nr/2+1;
+    cudaplan_t *t; int nc=fftnr/2+1;
     t = (cudaplan_t*)calloc(1, sizeof(cudaplan_t));
-
-    cufftResult_t code = cufftPlanMany(&t->plan, 1, &nr, &nr, 1, nr, &nc, 1, nc, CUFFT_R2C, howmany);
+    t->fftnr = fftnr;
+    t->rskip = rskip;
+    t->cskip = cskip;
+    t->howmany = howmany;
+    cufftResult_t code = cufftPlanMany(&t->plan, 1, &fftnr, &fftnr, 1, rskip, &nc, 1, cskip, CUFFT_R2C, howmany);
     assert(code==CUFFT_SUCCESS);
 
     *h = (cudaplan_h)(t);

@@ -30,14 +30,14 @@ void gputimer_start(gputimer_h h);
 void gputimer_pause(gputimer_h h);
 float gputimer_done(gputimer_h h);
 
-void fftw1d_base_plan(fftwplan_h *h, int nr);
-void fftw1d_base_r2c(fftwplan_h h, float *pr, int rdist, int nmemb, complex float *po, int cdist, int repeat);
-void fftw1d_base_c2r(fftwplan_h h, complex float *po, int cdist, int nmemb, float *pr, int rdist, int repeat);
-void fftw1d_base_destroy(fftwplan_h h);
+void fftw1d_plan(fftwplan_h *h, int nr);
+void fftw1d_r2c(fftwplan_h h, float *pr, int rdist, int nmemb, complex float *po, int cdist, int repeat);
+void fftw1d_c2r(fftwplan_h h, complex float *po, int cdist, int nmemb, float *pr, int rdist, int repeat);
+void fftw1d_destroy(fftwplan_h h);
 
-void cuda1d_plan(cudaplan_h *h, int nr, int howmany);
+void cuda1d_plan(cudaplan_h *h, int fftnr, int rskip, int cskip, int howmany);
+void cuda1d_r2c(cudaplan_h h, float *pi, complex float *po, int repeat);
 void cuda1d_destroy(cudaplan_h h);
-void cuda1d_r2c(cudaplan_h h, float *pi, int nr, int nmemb, complex float *po, int repeat);
 
 #ifdef __cplusplus
 }

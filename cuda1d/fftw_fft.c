@@ -6,7 +6,7 @@ typedef struct {
     fftwf_plan      rvs;
 } fftwplan_t;
 
-void fftw1d_base_plan(fftwplan_h *h, int nr)
+void fftw1d_plan(fftwplan_h *h, int nr)
 {
     fftwplan_t *tt;
     float *pr; complex float *pc; int nc=nr/2+1;
@@ -20,7 +20,7 @@ void fftw1d_base_plan(fftwplan_h *h, int nr)
     *h = (fftwplan_h)tt;
 }
 
-void fftw1d_base_r2c(fftwplan_h h, float *pr, int rdist, int nmemb, 
+void fftw1d_r2c(fftwplan_h h, float *pr, int rdist, int nmemb, 
         complex float *po, int cdist, int repeat)
 {
     fftwplan_t *t = (fftwplan_t*)h;
@@ -29,7 +29,7 @@ void fftw1d_base_r2c(fftwplan_h h, float *pr, int rdist, int nmemb,
             fftwf_execute_dft_r2c(t->fwd, pr+j*rdist, (fftwf_complex*)(po+j*cdist));
 }
 
-void fftw1d_base_c2r(fftwplan_h h, complex float *po, int cdist, int nmemb,
+void fftw1d_c2r(fftwplan_h h, complex float *po, int cdist, int nmemb,
         float *pr, int rdist, int repeat)
 {
     fftwplan_t *t = (fftwplan_t*)h;
@@ -38,7 +38,7 @@ void fftw1d_base_c2r(fftwplan_h h, complex float *po, int cdist, int nmemb,
             fftwf_execute_dft_c2r(t->rvs, (fftwf_complex*)(po+j*cdist), pr+j*rdist);
 }
 
-void fftw1d_base_destroy(fftwplan_h h)
+void fftw1d_destroy(fftwplan_h h)
 {
     fftwplan_t *t = (fftwplan_t*)h;
     fftwf_destroy_plan(t->fwd);
