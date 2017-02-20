@@ -12,6 +12,7 @@ NFLAG="-ccbin=clang-3.8 -gencode $ARCH -Wno-deprecated-gpu-targets"
 rm -f *.o
 
 nvcc $NFLAG -c utility.cu 
+nvcc $NFLAG -c cuda_fft.cu
 
 gcc  $CFLAG -c fftw_fft.c 
 gcc  $CFLAG -c valid_base.c

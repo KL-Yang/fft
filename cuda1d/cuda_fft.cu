@@ -1,8 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <complex.h>
-#include <assert.h>
+#include "common.h"
 #include <cufft.h>
+
+typedef struct {
+    cufftHandle     plan;
+} cudaplan_t;
 
 #define CCK(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
@@ -13,16 +14,13 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
         if (abort) exit(code);
     }
 }
-#define ID_LEN  16
-
-typedef struct gputimer_struct * gputimer_h;
 
 /**
  * repeat is used to control doing something or just measure overhead
  */
-void cuda_fft1d_r2c(cufftHandle plan, float *pi, int nr, int nmemb, complex float *po, int repeat)
+void cuda1d_r2c(cudaplan_h h, float *pi, int nr, int nmemb, complex float *po, int repeat)
 {
-    float *d_inp; 
+    float *d_inp; cudaplan_t *t = (cudaplan_t*)h;
     cufftComplex *d_out; int nc = nr/2+1;
 
     CCK(cudaMalloc((void**)&d_inp, sizeof(float)*nr*nmemb));
@@ -30,7 +28,7 @@ void cuda_fft1d_r2c(cufftHandle plan, float *pi, int nr, int nmemb, complex floa
     CCK(cudaMemcpy(d_inp, pi, sizeof(float)*nr*nmemb, cudaMemcpyHostToDevice));
 
     for(int i=0; i<repeat; i++) {
-        cufftResult_t code = cufftExecR2C(plan, d_inp, d_out);
+        cufftResult_t code = cufftExecR2C(t->plan, d_inp, d_out);
         assert(code==CUFFT_SUCCESS);
     }
 
@@ -39,27 +37,21 @@ void cuda_fft1d_r2c(cufftHandle plan, float *pi, int nr, int nmemb, complex floa
     CCK(cudaFree(d_out));
 }
 
-cufftHandle cuda_fft1d_plan(int nr, int howmany)
+void cuda1d_plan(cudaplan_h *h, int nr, int howmany)
 {
-    float elapsedTime; cudaEvent_t start, stop;
-    cudaEventCreate(&start); cudaEventRecord(start,0);
+    cudaplan_t *t; int nc=nr/2+1;
+    t = (cudaplan_t*)calloc(1, sizeof(cudaplan_t));
 
-    cufftHandle plan; int nc=nr/2+1;
-
-    cufftResult_t code = cufftPlanMany(&plan, 1, &nr, &nr, 1, nr, &nc, 1, nc, CUFFT_R2C, howmany);
+    cufftResult_t code = cufftPlanMany(&t->plan, 1, &nr, &nr, 1, nr, &nc, 1, nc, CUFFT_R2C, howmany);
     assert(code==CUFFT_SUCCESS);
 
-    cudaEventCreate(&stop); cudaEventRecord(stop,0);
-    cudaEventSynchronize(stop);
-    cudaEventElapsedTime(&elapsedTime, start,stop);
-    printf("Elapsed time : %f ms\n" ,elapsedTime);
-
-    return plan;
+    *h = (cudaplan_h)(t);
 }
 
-void cuda_fft1d_destroy(cufftHandle plan) 
+void cuda1d_destroy(cudaplan_h h) 
 {
+    cudaplan_t *t = (cudaplan_t*)h;
     cufftResult_t code;
-    code = cufftDestroy(plan);
+    code = cufftDestroy(t->plan);
     assert(code==CUFFT_SUCCESS);
 }

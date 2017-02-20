@@ -13,8 +13,8 @@ static void run_test(int fftnr, int howmany, int repeat)
     anr = ALIGN8(fftnr);
     anc = ALIGN4((fftnr/2+1));
 
-    fftwf_plan plan[2];
-    fftw1d_base_plan(plan, fftnr);
+    fftwplan_h plan;
+    fftw1d_base_plan(&plan, fftnr);
 
     //allocate and warm up the buffer!
     pr = calloc(howmany, anr*sizeof(float));
@@ -26,7 +26,7 @@ static void run_test(int fftnr, int howmany, int repeat)
         for(j=0; j<anc; j++, xc++)
             *xc = 1.0f;
 
-    fftw1d_base_r2c(plan[0], pr, anr, howmany, pc, anc, repeat);
+    fftw1d_base_r2c(plan, pr, anr, howmany, pc, anc, repeat);
 
     fftw1d_base_destroy(plan);
     free(pr); free(pc);
