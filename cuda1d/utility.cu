@@ -47,7 +47,7 @@ float cputimer_done(cputimer_h h)
 {
     float total;
     cputimer_t *t = (cputimer_t*)h;
-    printf(" CPU<%16s>: stime: %9.1f ms, utime: %9.1f\n", t->id, t->stime, t->utime);
+    printf(" <%16s>: stime: %9.1f ms, utime: %9.1f\n", t->id, t->stime, t->utime);
     total = t->stime+t->utime;
     free(t);
     return total;

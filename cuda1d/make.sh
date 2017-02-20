@@ -13,11 +13,9 @@ rm -f *.o
 
 nvcc $NFLAG -c utility.cu 
 nvcc $NFLAG -c cuda_fft.cu
-
 gcc  $CFLAG -c fftw_fft.c 
-gcc  $CFLAG -c valid_base.c
-gcc  $CFLAG -c speed_base.c
-nvcc $NFLAG -o valid_gpu valid_gpu.cu utility.o fftw_fft.o cuda_fft.o -lcufft -lcudart -lfftw3f -lm
 
-#nvcc $NFLAG -o valid_base utility.o fftw_fft.o valid_base.o -lcudart -lfftw3f -lm
-#nvcc $NFLAG -o speed_base utility.o fftw_fft.o speed_base.o -lcudart -lfftw3f -lm
+nvcc $NFLAG -o valid_base valid_base.c utility.o fftw_fft.o -lcudart -lfftw3f -lm
+nvcc $NFLAG -o speed_base speed_base.c utility.o fftw_fft.o -lcudart -lfftw3f -lm
+nvcc $NFLAG -o valid_cuda valid_cuda.c utility.o fftw_fft.o cuda_fft.o -lcufft -lcudart -lfftw3f -lm
+nvcc $NFLAG -o speed_cuda speed_cuda.c utility.o fftw_fft.o cuda_fft.o -lcufft -lcudart -lfftw3f -lm

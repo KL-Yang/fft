@@ -1,0 +1,11 @@
+valid_base : manual valid fft transform.
+valid_many : compare fftw many against base.
+valid_cuda : compare cuda many against base.
+
+repeatly transform a working size of about 128M to 256M.
+report the number of (TPS) transfers per second on varies FFT size.
+cuda speed need handle varies working size and batch combination.
+
+speed_base : speed of fftw single interface
+speed_many :
+speed_cuda :
