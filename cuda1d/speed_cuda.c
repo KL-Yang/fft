@@ -76,7 +76,7 @@ int main(int argc, char * argv[])
     }
 
     float tps = (howmany*repeat*1000.0f)/(time1-time0);
-    printf("%8d, %8d, %8d, %9.1f\n", nr, howmany, repeat, tps);
+    printf("%8d, %8d, %8d, %14.1f\n", nr, howmany, repeat, tps);
 
     return 0;
 }

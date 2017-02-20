@@ -6,4 +6,5 @@ for i in $nrlist; do
     #echo "run through 16*4M data"
     #echo $i, $howmany
     optirun ./speed_cuda $i $howmany 100
+    sleep 1m    #not burn the GPU too hot!
 done

@@ -6,8 +6,8 @@
 #
 #
 ARCH="arch=compute_20,code=sm_21"
-CFLAG="-std=gnu99 -W -Wall"
-NFLAG="-ccbin=clang-3.8 -gencode $ARCH -Wno-deprecated-gpu-targets"
+CFLAG="-std=gnu99 -W -Wall -O0"
+NFLAG="-ccbin=clang-3.8 -gencode $ARCH -Wno-deprecated-gpu-targets -O0"
 
 rm -f *.o
 
