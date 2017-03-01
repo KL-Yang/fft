@@ -90,7 +90,6 @@ void cuda1d_c2c(cudaplan_h h, const complex float *pi, complex float *po, int re
     CCK(cudaFree(d_out));
 }
 
-
 /**
  * Note, for r2c and c2r, input/output need padding to the 2*nc float length
  * For r2c or c2r, skip count float!

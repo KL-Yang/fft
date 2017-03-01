@@ -12,6 +12,7 @@ extern "C" {
 #define ID_LEN      16
 #define ALIGN8(n)   ((n%8)?(n+8-n%8):(n))
 #define ALIGN4(n)   ((n%4)?(n+4-n%4):(n))
+#define MAX(a,b)    ((a)>(b))?(a):(b)
 
 typedef struct cputimer_struct * cputimer_h;
 typedef struct gputimer_struct * gputimer_h;
@@ -31,6 +32,7 @@ float gputimer_done(gputimer_h h);
 void fftw1d_plan(fftwplan_h *h, int nr);
 void fftw1d_r2c(fftwplan_h h, float *pr, int rdist, int nmemb, complex float *po, int cdist, int repeat);
 void fftw1d_c2r(fftwplan_h h, complex float *po, int cdist, int nmemb, float *pr, int rdist, int repeat);
+void fftw1d_c2c(fftwplan_h h, complex float *pi, int idist, int nmemb, complex float *po, int odist, int repeat, int flag);
 void fftw1d_destroy(fftwplan_h h);
 
 void cuda1d_plan(cudaplan_h *h, int n, int rskip, int howmany, const char *type);
