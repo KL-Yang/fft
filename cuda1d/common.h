@@ -33,7 +33,7 @@ void fftw1d_r2c(fftwplan_h h, float *pr, int rdist, int nmemb, complex float *po
 void fftw1d_c2r(fftwplan_h h, complex float *po, int cdist, int nmemb, float *pr, int rdist, int repeat);
 void fftw1d_destroy(fftwplan_h h);
 
-void cuda1d_plan(cudaplan_h *h, int n, int skip, int howmany);
+void cuda1d_plan(cudaplan_h *h, int n, int rskip, int howmany, const char *type);
 void cuda1d_r2c(cudaplan_h h, const float *pi, complex float *po, int repeat);
 void cuda1d_c2r(cudaplan_h h, const complex float *pi, float *po, int repeat);
 void cuda1d_c2c(cudaplan_h h, const complex float *pi, complex float *po, int repeat, int flag);

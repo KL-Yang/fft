@@ -13,7 +13,7 @@ static void run_test_r2c(int n, int skip, int howmany, int repeat)
     pr = calloc(howmany, skip*sizeof(float));
     pc = calloc(howmany, skip*sizeof(float));
 
-    cuda1d_plan(&plan, n, skip, howmany);
+    cuda1d_plan(&plan, n, skip, howmany, "r2c");
     cuda1d_r2c(plan, pr, pc, repeat);
     cuda1d_destroy(plan);
 
@@ -28,7 +28,7 @@ static void run_test_c2c(int n, int skip, int howmany, int repeat)
     pi = calloc(howmany, skip*sizeof(float));
     po = calloc(howmany, skip*sizeof(float));
 
-    cuda1d_plan(&plan, n, skip, howmany);
+    cuda1d_plan(&plan, n, skip, howmany, "c2c");
     cuda1d_c2c(plan, pi, po, repeat, 1);
     cuda1d_destroy(plan);
 
@@ -74,17 +74,22 @@ int main(int argc, char * argv[])
                 "repeat=0 to measure the system overhead! compile with -O0!\n", argv[0]);
         exit(1);
     }
-    int n, skip, howmany, repeat;
-    n = atoi(argv[1]); skip = ALIGN8(2*(n/2+1));
+    int n, skip, howmany, repeat; float tps_r2c, tps_c2c;
+    n = atoi(argv[1]); 
     howmany = atoi(argv[2]);
     repeat = atoi(argv[3]);
 
-    float tps;
-    tps = benchmark_tps(n, skip, howmany, repeat, &run_test_r2c);
-    printf("r2c, %8d, %8d, %8d, %14.1f\n", n, howmany, repeat, tps);
+    printf("#%s: len=%8d, howmany=%8d, repeat=%8d\n", argv[0], n, howmany, repeat);
+    fflush(stdout);
 
-    tps = benchmark_tps(n, skip, howmany, repeat, &run_test_c2c);
-    printf("c2c, %8d, %8d, %8d, %14.1f\n", n, howmany, repeat, tps);
+    skip = ALIGN8(2*(n/2+1));
+    tps_r2c = benchmark_tps(n, skip, howmany, repeat, &run_test_r2c);
+
+    skip = ALIGN8(2*n);
+    tps_c2c = benchmark_tps(n, skip, howmany, repeat, &run_test_c2c);
+
+    printf("#%8s  %12s  %12s\n", "FFTsize", "R2C_TPS", "C2C_TPS");
+    printf("%9d  %12.1f  %12.1f\n", n, tps_r2c, tps_c2c);
 
     return 0;
 }

@@ -20,7 +20,7 @@ static void run_valid(int nr, int howmany)
     fftw1d_r2c(fftw, pr, skip, howmany, c1, skip/2, 1);
     fftw1d_destroy(fftw);
 
-    cuda1d_plan(&cuda, nr, skip, howmany);
+    cuda1d_plan(&cuda, nr, skip, howmany, "r2c");
     cuda1d_r2c(cuda, pr, c2, 1);
     cuda1d_destroy(cuda);
 
