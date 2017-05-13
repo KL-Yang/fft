@@ -1,0 +1,38 @@
+#!/usr/bin/lua
+
+--
+-- List all the possible 2357 fftsize for later use
+--
+
+base = {2, 3, 5, 7}
+
+if #arg<2 then
+    print("\nUSAGE: list2357 min max, list the fast Fourier Transform size\n"..
+    "  min: lower bound range\n"..
+    "  max: upper bound range\n\n")
+    os.exit(0)
+end
+rmin = tonumber(arg[1])
+rmax = tonumber(arg[2])
+
+function isfftsize(size, blist)
+    while size~=1 do
+        sold = size
+        for i=1, #blist do
+            if size%blist[i]==0 then
+                size = size/blist[i]
+                break
+            end
+        end
+        if size==sold then
+            return false
+        end
+    end
+    return true
+end
+
+for i=rmin, rmax do
+    if isfftsize(i, base) then
+        print(i)
+    end
+end
