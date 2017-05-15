@@ -1,3 +1,5 @@
+TODO: write a naive FT as validation FFT of a random series.
+
 valid_base : manual valid fft transform.
 valid_many : compare fftw many against base.
 valid_cuda : compare cuda many against base.
