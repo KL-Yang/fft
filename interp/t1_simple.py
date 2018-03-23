@@ -80,9 +80,9 @@ for ii in range(2*n):
         matRDFT[ii][jj] = cmath.exp(1j*2*math.pi*ii*jj/(2*n))
 matDIAG = np.zeros((2*n, 2*n), dtype=np.complex_)
 for ii in range(n+1): #nyquist frequency is 1.0 in denser sampling
-    matDIAG[ii][ii] = -1j*ii*1.0/n
+    matDIAG[ii][ii] = 2*math.pi*1j*ii*1.0/n
 for ii in range(n+1, 2*n):
-    matDIAG[ii][ii] = 1j*(ii-2.0*n)/n
+    matDIAG[ii][ii] = 2*math.pi*1j*(ii-2.0*n)/n
 matTEMP = np.dot(matRDFT, matDIAG)
 #the 2nd half is RDFT*DIAG then decimate
 for ii in range(n):
@@ -122,6 +122,17 @@ fft_xxx = np.dot(matDFT, sig_des)
 for i in range(len(fft_xxx)):
     freq = fnq_des*(i*1.0/inq_des)
 #    print "-%6d, %9.4f, %9.4f" % (i, freq, abs(fft_xxx[i]))
+
+###################################################################
+#Testing code 2
+#Try the -iwF(w) deritive thing!
+###################################################################
+for i in range(2*n):
+    if i<=n:
+        d = -1j*i*1.0/n
+    else:
+        d = 1j*(i-2*n)/n
+
 
 ###################################################################
 #Testing code 2
