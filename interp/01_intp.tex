@@ -1,0 +1,191 @@
+\title{Interpolation using deritive}
+\author{KL-Yang}
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This is a note of the equations used for interpolation,
+    used to evaluate concept related with westerngeco isometrix acquistion.
+\end{abstract}
+
+\section{Matrix form of DFT}
+The discreted Fourier transform is defined as:
+\begin{equation}
+    X_n = \sum_{n=0}^{N-1} x_n e ^ {-i2\pi kn/N}
+\end{equation}
+In matrix vector multiplication form:
+\begin{equation}
+\begin{bmatrix}
+    X_0 \\ X_1 \\ X_2 \\ X_3 \\ \vdots \\ X_{N-1} 
+\end{bmatrix}
+=
+    \begin{bmatrix}
+        1 & 1 & 1 & 1 & \ldots & 1 \\
+        1 & \omega & \omega^2 & \omega^3 & \ldots & \omega^{N-1} \\
+        1 & \omega^2 & \omega^4 & \omega^6 & \ldots & \omega^{2(N-1)} \\
+        1 & \omega^3 & \omega^6 & \omega^9 & \ldots & \omega^{3(N-1)} \\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+        1 & \omega^{N-1} & \omega^{2(N-1)} & \omega^{3(N-1)} & \ldots & \omega^{(N-1)(N-1)} 
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_0 \\ x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_{N-1}
+    \end{bmatrix}
+\end{equation}
+Here $\omega=e^{-2\pi i/N}$, be careful, $\omega$ may denote to different thing in this note,
+it will be explained explicitly everytime.
+If we scale the matrix by $1/\sqrt{N}$ and write it as $W_t$, the equation in short form:
+\begin{equation}
+    \bar{X} = W_t\bar{x}
+\end{equation}
+For reverse DFT, the appearance of the matrix is the same, except that $\omega=e^{2\pi i/N}$, 
+we write it as $W_t^{-1}$, $\bar{x} = W_t^{-1}\bar{X}$.
+
+\section{Fourier transform of derivative}
+
+Given the Fourier transform of a general function, find the Fourier transform of its derivative.
+\begin{eqnarray}
+    F.T[f(t)]  &=& F(\omega)   \\
+    F.T[f'(t)] &=& -i\omega F(\omega)
+\end{eqnarray}
+Back to the example, a continous function $f(n)$ can be found to satisfy:
+\begin{eqnarray}
+    x_n  &=& f(n)    \\
+    X_n  &=& F.T[f(t)] = F(\omega)|_{n \to \omega} \\
+    x'_n &=& f'(n) \\
+    X'_n &=& F.T[f'(t)] = -i\omega F(\omega)|_{n\to \omega} = -i\omega X_n|_{n\to \omega} 
+\end{eqnarray}
+The trigonometric interpolation polynomial can be such a function! And here the $\omega$ is 
+angle frequency from $-2\pi f_{nyquist}$ to $2\pi f_{nyquist}$.
+
+
+\section{Matrix form of derivative}
+Considering the trigonometric interpolation polynomial. For real number $x_n$ of even length $N$
+\footnote{Even and odd shall be handled differently}, the derivative $x'_n$:
+\begin{eqnarray}
+    \bar{x'} & = & W_t^{-1} D \bar{X} \\
+    D &= & diag[0, 2f, 4f, \ldots, (N-2)f, Nf, -(N-2)f, \ldots, -4f, -2f]
+\end{eqnarray}
+where $f=2\pi if_{nyquist}/N$, and $D$ is a diagonal matrix.
+
+\section{Definition of the problem}
+The known are $N$ measured samples of  $x_n$ and $x'_n$, with sample interval of $1$.
+The unknow spectrum $Y_n$, ranging from $0$ to $2f_{nyquist}$, need to be constructed to meet the measurement.
+Assume $N$ is even number for the simplicity, odd number of $N$ will form slightly different equations.
+
+The MS interpolation need to be able to unfold alias, otherwise would be useless. 
+To be realistic, it has to be assumed that:
+\begin{enumerate}
+    \item Original sample $x_n$ is aliased.
+    \item Original signal is band limited to $2f_{nyquist}$.
+\end{enumerate}
+
+\subsection{First equation}
+\begin{equation}
+    \begin{bmatrix}
+        x_0 \\ \varnothing \\ x_1 \\ \vdots \\ \varnothing \\ x_{N/2} \\ \varnothing \\ \vdots \\ x_N \\ \varnothing
+    \end{bmatrix}
+\Leftrightarrow
+    \begin{bmatrix}
+        y_0 \\ y_1 \\ y_2 \\ \vdots \\ y_{N-1} \\ y_N \\ y_{N+1} \\ \vdots \\ y_{2N-2} \\ y_{2N-1}
+    \end{bmatrix}
+= W_t^{-1}|_{2N\times 2N}
+    \begin{bmatrix}
+        Y_0 \\ Y_1 \\ Y_2 \\ \vdots \\ Y_{N-1} \\Y_N \\ Y_{N+1} \\ \vdots \\ Y_{2N-2} \\ Y_{2N-1} 
+    \end{bmatrix}
+\Leftrightarrow
+    \begin{bmatrix}
+        X_0 \\ X_1  \\ X_2 \\ \vdots \\ X_{N-1} \\ \varnothing \\ \varnothing \\ \vdots \\ \varnothing \\ \varnothing
+    \end{bmatrix}
+\end{equation}
+Where $W_t|_{2N \times 2N}$ is the DFT matrix:
+\begin{equation}
+W_t|_{2N \times 2N} =
+ \begin{bmatrix}
+        1 & 1 & 1 & 1 & \ldots & 1 \\
+        1 & \omega & \omega^2 & \omega^3 & \ldots & \omega^{2N-1} \\
+        1 & \omega^2 & \omega^4 & \omega^6 & \ldots & \omega^{2(2N-1)} \\
+        1 & \omega^3 & \omega^6 & \omega^9 & \ldots & \omega^{3(2N-1)} \\
+        \vdots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+        1 & \omega^{2N-1} & \omega^{2(2N-1)} & \omega^{3(2N-1)} & \ldots & \omega^{(2N-1)(2N-1)} 
+    \end{bmatrix}
+\end{equation}
+It forms $N$ equations, and the DFT matrix decimated to $W_t|_{N\times 2N}$. 
+Being alone they are under determined, 
+and there is no constrain over $Y_N \to Y_{2N-1}$, 
+which is between $f_{nyquist}$ and $2f_{nyquist}$. 
+
+
+The least sequare solution to these equations lead to frequency domain interpolation, 
+where $Y_n$ above $f_{nyquist}$ is simply set to $0$.
+
+\subsection{Second equation}
+\begin{equation}
+    \begin{bmatrix}
+        x'_0 \\ \varnothing \\ x'_1 \\ \vdots \\ \varnothing \\ x'_{N/2} \\ \varnothing \\ \vdots \\ x'_N \\ \varnothing
+    \end{bmatrix}
+\Leftrightarrow
+    \begin{bmatrix}
+        y'_0 \\ y'_1 \\ y'_2 \\ \vdots \\ y'_{N-1} \\ y'_N \\ y'_{N+1} \\ \vdots \\ y'_{2N-2} \\ y'_{2N-1}
+    \end{bmatrix}
+= W_t^{-1}|_{2N\times 2N} D
+    \begin{bmatrix}
+        Y_0 \\ Y_1 \\ Y_2 \\ \vdots \\ Y_{N-1} \\Y_N \\ Y_{N+1} \\ \vdots \\ Y_{2N-2} \\ Y_{2N-1} 
+    \end{bmatrix}
+\end{equation}
+Where $D$ is previously mentioned diagonal matrix. 
+This can form another $N$ equations, with the matrix decimated to $N\times 2N$.
+
+\subsection{Joint equation}
+\begin{equation}
+    \begin{bmatrix}
+        \bar{x} |_{N\times 1} \\
+        \bar{x'}|_{N\times 1}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        W_t^{-1}~~~|_{N\times 2N} \\
+        W_t^{-1} D|_{N\times 2N}  
+    \end{bmatrix}
+    \begin{bmatrix}
+        \bar{Y}|_{2N\times 1}
+    \end{bmatrix}
+\end{equation}
+
+If the matrix is full rank. The solution will unwrap the alias and expand the frequency to $2f_{nyquist}$.
+
+\section{Solver}
+To solve the equation $Ax=b$ use CG.
+\begin{eqnarray}
+    A &=&
+    \begin{bmatrix}
+        W_t|_{2N\times N} ~~~ DW_t|_{2N\times N}
+    \end{bmatrix}
+    \begin{bmatrix}
+        W_t^{-1}~~~|_{N\times 2N} \\
+        W_t^{-1} D|_{N\times 2N}  
+    \end{bmatrix} \\
+    x &=&
+    \begin{bmatrix}
+        \bar{Y}|_{2N\times 1}
+    \end{bmatrix} \\
+    b &=&
+    \begin{bmatrix}
+        W_t|_{2N\times N} ~~~ DW_t|_{2N\times N}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \bar{x} |_{N\times 1} \\
+        \bar{x'}|_{N\times 1}
+    \end{bmatrix}
+\end{eqnarray}
+For Conjugate Grad
+
+
+
+
+\end{document}
