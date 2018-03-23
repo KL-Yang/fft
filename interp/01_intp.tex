@@ -10,16 +10,17 @@
 \maketitle
 
 \begin{abstract}
-This is a note of the equations used for interpolation,
-    used to evaluate concept related with westerngeco isometrix acquistion.
+This is a note of how to setup the interpolation equations in Fourier domain utilizing derivative samples.
+The problem is a concept abstraction of the method used in WesternGeco's isometrix seismic acquistion.
+The equations are derived or picked from many references.
 \end{abstract}
 
 \section{Matrix form of DFT}
-The discreted Fourier transform is defined as:
+The DFT (Discreted Fourier Transform) is defined as:
 \begin{equation}
     X_n = \sum_{n=0}^{N-1} x_n e ^ {-i2\pi kn/N}
 \end{equation}
-In matrix vector multiplication form:
+Which in matrix vector multiplication form is:
 \begin{equation}
 \begin{bmatrix}
     X_0 \\ X_1 \\ X_2 \\ X_3 \\ \vdots \\ X_{N-1} 
@@ -37,28 +38,28 @@ In matrix vector multiplication form:
         x_0 \\ x_1 \\ x_2 \\ x_3 \\ \vdots \\ x_{N-1}
     \end{bmatrix}
 \end{equation}
-Here $\omega=e^{-2\pi i/N}$, be careful, $\omega$ may denote to different thing in this note,
+Where $\omega=e^{-2\pi i/N}$, be careful, $\omega$ may denote to different thing in this note,
 it will be explained explicitly everytime.
 If we scale the matrix by $1/\sqrt{N}$ and write it as $W_t$, the equation in short form:
 \begin{equation}
     \bar{X} = W_t\bar{x}
 \end{equation}
-For reverse DFT, the appearance of the matrix is the same, except that $\omega=e^{2\pi i/N}$, 
+For inverse DFT, the appearance of the matrix is the same, except that $\omega=e^{2\pi i/N}$, 
 we write it as $W_t^{-1}$, $\bar{x} = W_t^{-1}\bar{X}$.
 
 \section{Fourier transform of derivative}
 
-Given the Fourier transform of a general function, find the Fourier transform of its derivative.
+Given the Fourier transform of a general function, its derivative is:
 \begin{eqnarray}
     F.T[f(t)]  &=& F(\omega)   \\
-    F.T[f'(t)] &=& -i\omega F(\omega)
+    F.T[f'(t)] &=& i\omega F(\omega)
 \end{eqnarray}
-Back to the example, a continous function $f(n)$ can be found to satisfy:
+For DFT, a continous function $f(n)$ can be found to satisfy:
 \begin{eqnarray}
     x_n  &=& f(n)    \\
     X_n  &=& F.T[f(t)] = F(\omega)|_{n \to \omega} \\
     x'_n &=& f'(n) \\
-    X'_n &=& F.T[f'(t)] = -i\omega F(\omega)|_{n\to \omega} = -i\omega X_n|_{n\to \omega} 
+    X'_n &=& F.T[f'(t)] = i\omega F(\omega)|_{n\to \omega} = i\omega X_n|_{n\to \omega} 
 \end{eqnarray}
 The trigonometric interpolation polynomial can be such a function! And here the $\omega$ is 
 angle frequency from $-2\pi f_{nyquist}$ to $2\pi f_{nyquist}$.
@@ -69,23 +70,38 @@ Considering the trigonometric interpolation polynomial. For real number $x_n$ of
 \footnote{Even and odd shall be handled differently}, the derivative $x'_n$:
 \begin{eqnarray}
     \bar{x'} & = & W_t^{-1} D \bar{X} \\
-    D &= & diag[0, 2f, 4f, \ldots, (N-2)f, Nf, -(N-2)f, \ldots, -4f, -2f]
+    D &=&
+    \begin{bmatrix}
+        0 & 0 & 0 & \ldots & 0 & 0 & 0 & \ldots & 0 \\
+        0 & 2f & 0 & \ldots & 0 & 0 & 0 & \ldots & 0 \\
+        0 & 0 & 4f & \ldots & 0 & 0 & 0 & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+        \vdots & \vdots & \vdots & \ldots & (N-2)f & 0 & 0 & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ldots & 0 & Nf & 0 & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ldots & 0 & 0 & -(N-2)f & \ldots & 0 \\
+        \vdots & \vdots & \vdots & \ldots & \vdots & \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & 0 & \ldots & 0 & 0 & 0 & \ldots & -2f \\
+    \end{bmatrix}
 \end{eqnarray}
-where $f=2\pi if_{nyquist}/N$, and $D$ is a diagonal matrix.
+where $f=i2\pi f_{nyquist}/N$, and $D$ is a diagonal matrix
+\footnote{Some reference on Google gives wrong result about this!}.
 
 \section{Definition of the problem}
-The known are $N$ measured samples of  $x_n$ and $x'_n$, with sample interval of $1$.
-The unknow spectrum $Y_n$, ranging from $0$ to $2f_{nyquist}$, need to be constructed to meet the measurement.
-Assume $N$ is even number for the simplicity, odd number of $N$ will form slightly different equations.
+The known are $N$ measurement of samples $x_n$ and the derivative $x'_n$.
+The interpolation need to utilize both measurement 
+to extend the frequency to the range from $0$ to $2f_{nyquist}$.
 
-The MS interpolation need to be able to unfold alias, otherwise would be useless. 
+Assume $N$ is even number. If $N$ is odd, equations shall be formed differently. 
+The interpolation need to be able to unfold alias, otherwise would be useless. 
 To be realistic, it has to be assumed that:
 \begin{enumerate}
-    \item Original sample $x_n$ is aliased.
-    \item Original signal is band limited to $2f_{nyquist}$.
+    \item Original sample $\bar{x}_n$ is aliased.
+    \item Signal is band limited to $2f_{nyquist}$.
 \end{enumerate}
+Fail to satisfy the assumptions will render the interpolation meaningless.
 
 \subsection{First equation}
+Let the interpolated signal be $y_n$, and its spectrum be $Y_n$.
 \begin{equation}
     \begin{bmatrix}
         x_0 \\ \varnothing \\ x_1 \\ \vdots \\ \varnothing \\ x_{N/2} \\ \varnothing \\ \vdots \\ x_N \\ \varnothing
@@ -142,9 +158,10 @@ Where $D$ is previously mentioned diagonal matrix.
 This can form another $N$ equations, with the matrix decimated to $N\times 2N$.
 
 \subsection{Joint equation}
+Put the two set of equations together.
 \begin{equation}
     \begin{bmatrix}
-        \bar{x} |_{N\times 1} \\
+        \bar{x}~|_{N\times 1} \\
         \bar{x'}|_{N\times 1}
     \end{bmatrix}
     =
