@@ -7,9 +7,8 @@ import numpy as np
 #f_nyquist = 1/2, after interpolation, nyquist at 1.0
 
 n=128           #even number of sample, easy for testing
-#f=[1/32.0, 3/32.0, 18/32.0]
+f=[1/32.0, 3/32.0, 18/32.0]
 #f=[18/32.0]     #single frequency! alias to 14/32.0
-f=[14/32.0]     #single frequency! alias to 14/32.0
 
 #compute signal [0, 128)
 def mysig(x, freq):
@@ -102,12 +101,15 @@ for ii in range(n):
     vecb[i2] = der_org[ii]
 
 ###################################################################
-# step3: solve the Ax=b
+# step3: solve the Ax=b, and unwrap time signal
 ###################################################################
+vecx = np.linalg.solve(matA, vecb)
+sigx = np.fft.ifft(vecx)*2*n
+for i in range(len(sigx)):
+    print "%04d %9.4f %9.4f %9.4f" % (i, sigx[i].real, sig_des[i], vecx[i].imag)
 
-
-#now Ax=b matrix is formed!
-#TODO: setup b, and inverse A to compute the spectrum!!!
+#Bingle! problem solved here! Except the DFT matrix normalization issue!
+#Once the matrix is inverse, the solution is determinstic!!!
 
 ###################################################################
 #Testing code 1
@@ -125,25 +127,11 @@ for i in range(len(fft_xxx)):
 
 ###################################################################
 #Testing code 2
-#Try the -iwF(w) deritive thing!
-###################################################################
-for i in range(2*n):
-    if i<=n:
-        d = -1j*i*1.0/n
-    else:
-        d = 1j*(i-2*n)/n
-
-
-###################################################################
-#Testing code 2
-#Use the true answer and compute if Ax~b?
+#Use the true answer and compute if Ax=y vs b?
 ###################################################################
 fft_ref = np.fft.fft(sig_des)
-
 y = np.dot(matA, fft_ref)/(2*n)
-#compare y vs b, should equal
-for i in range(n+1, len(y)):
-    print i, y[i].real, y[i].imag, vecb[i].real
-#    print "-%6d, %9.4f, %9.4f" % (i, freq, abs(fft_xxx[i]))
+#for i in range(len(y)):
+#    print "%4d %9.4f %9.4f %9.4f" % (i, y[i].real, y[i].imag, vecb[i].real)
 
 sys.exit(0)
