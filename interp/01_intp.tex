@@ -177,33 +177,37 @@ Put the two set of equations together.
 
 If the matrix is full rank. The solution will unwrap the alias and expand the frequency to $2f_{nyquist}$.
 
-\section{Solver}
-To solve the equation $Ax=b$ use CG.
-\begin{eqnarray}
-    A &=&
-    \begin{bmatrix}
-        W_t|_{2N\times N} ~~~ DW_t|_{2N\times N}
-    \end{bmatrix}
-    \begin{bmatrix}
-        W_t^{-1}~~~|_{N\times 2N} \\
-        W_t^{-1} D|_{N\times 2N}  
-    \end{bmatrix} \\
-    x &=&
-    \begin{bmatrix}
-        \bar{Y}|_{2N\times 1}
-    \end{bmatrix} \\
-    b &=&
-    \begin{bmatrix}
-        W_t|_{2N\times N} ~~~ DW_t|_{2N\times N}
-    \end{bmatrix}
-    \begin{bmatrix}
-        \bar{x} |_{N\times 1} \\
-        \bar{x'}|_{N\times 1}
-    \end{bmatrix}
-\end{eqnarray}
-For Conjugate Grad
+\section{Remarks}
+%To solve the equation $Ax=b$ use CG is not necessary. 
+The matrix can be inversed before hand and applied determinstically.
+Note those equation determins a unique system, which may not be desired, because the derivative sample 
+may have very bad S/N ratio, and the alias may comes from well above $2*f_{nyquist}$. 
+A solution with those constrains alone will not give satisfactory result in anyway.
 
+\section{Examples}
+Add example of unwrap aliased frequency with above equation.
 
-
+%\begin{eqnarray}
+%    A &=&
+%    \begin{bmatrix}
+%        W_t|_{2N\times N} ~~~ DW_t|_{2N\times N}
+%    \end{bmatrix}
+%    \begin{bmatrix}
+%        W_t^{-1}~~~|_{N\times 2N} \\
+%        W_t^{-1} D|_{N\times 2N}  
+%    \end{bmatrix} \\
+%    x &=&
+%    \begin{bmatrix}
+%        \bar{Y}|_{2N\times 1}
+%    \end{bmatrix} \\
+%    b &=&
+%    \begin{bmatrix}
+%        W_t|_{2N\times N} ~~~ DW_t|_{2N\times N}
+%    \end{bmatrix}
+%    \begin{bmatrix}
+%        \bar{x} |_{N\times 1} \\
+%        \bar{x'}|_{N\times 1}
+%    \end{bmatrix}
+%\end{eqnarray}
 
 \end{document}
