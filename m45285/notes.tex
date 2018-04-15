@@ -1,0 +1,61 @@
+\documentclass[12pt]{article}
+\usepackage{pdfpages}
+\usepackage{graphics}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{listings}
+
+\lstdefinestyle{myPy}{
+    belowcaptionskip=1\baselineskip,
+    frame=L,
+    xleftmargin=\parindent,
+    language=Python,
+    showstringspaces=false,
+    basicstyle=\footnotesize\ttfamily,
+    keywordstyle=\bfseries\color{green!40!black},
+    commentstyle=\itshape\color{purple!40!black},
+    identifierstyle=\color{blue},
+    stringstyle=\color{orange},
+}
+
+\begin{document}
+\title{Experiment notes on Iterative Reweighted Least Squares}
+\author{Yang Kunlun}
+\maketitle
+\begin{abstract}
+    This is an experiment note on the OpenStax-CNX module $m45285$.
+    A few other $l_1$ solver will be implemented in Python and compared 
+    with some examples too, to understand those algorithms.
+\end{abstract}
+
+\section{Python example}
+The original code Listings are in Matlab. Here is the python version.
+\begin{lstlisting}[style=myPy]
+import numpy as np
+def IRLS2(A, b, p=1.1, K=0.8, KK=20):
+    pk = 2
+    x = np.linalg.lstsq(A, b)[0]
+    E = []
+    for k in range(KK):
+        if p>=2:
+            pk = min([p, K*pk])
+        else:
+            pk = max([p, K*pk])
+        W  = np.diagflat(abs(x)**((2-pk)/2.0+1E-4))
+        AW = np.dot(A, W)
+        x2 = np.linalg.solve(np.dot(AW, AW.transpose()), b)
+        x1 = np.dot(np.dot(W, AW.transpose()), x2)
+        if p>=2:
+            q = 1/(pk-1.0)
+            x = q*x1 + (1-q)*x
+            nn = p
+        else:
+            x = x1
+            nn=1
+        E.append(np.linalg.norm(x, nn))
+        print("m45285[%4d]: norm=%f" %((k, E[-1])))
+    return x
+\end{lstlisting}
+
+
+\end{document}
