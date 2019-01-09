@@ -64,3 +64,18 @@ scratch, to be finished benchmark of intrinsic implementation.
 
        3.776574550 seconds time elapsed
 
+###########current best SSE Performance counter stats for './basic':
+
+       1066.662922      task-clock (msec)         #    0.971 CPUs utilized          
+               105      context-switches          #    0.098 K/sec                  
+                 0      cpu-migrations            #    0.000 K/sec                  
+                61      page-faults               #    0.057 K/sec                  
+     2,987,636,028      cycles                    #    2.801 GHz                      (49.44%)
+        11,404,536      stalled-cycles-frontend   #    0.38% frontend cycles idle     (50.00%)
+       452,626,497      stalled-cycles-backend    #   15.15% backend cycles idle      (50.30%)
+     6,546,246,316      instructions              #    2.19  insn per cycle         
+                                                  #    0.07  stalled cycles per insn  (50.72%)
+       421,527,308      branches                  #  395.183 M/sec                    (50.53%)
+           703,488      branch-misses             #    0.17% of all branches          (50.04%)
+
+       1.098956123 seconds time elapsed

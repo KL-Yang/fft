@@ -121,6 +121,8 @@ int main()
         conv_opsse2(a, n, f, m, c);
         //conv_opdeci(a, n, f, m, c);
     }
+    memset(b, 0, n*sizeof(float));
+    conv_basic(a, n, f, m, b);
     for(int i=0; i<n; i++) {
         if(fabs(b[i]-c[i])>0.1)
             printf("%4d b=%e c=%e\n", i, b[i], c[i]);
