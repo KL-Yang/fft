@@ -1,6 +1,34 @@
 #include <emmintrin.h>
 #include "common.h"
 
+/**
+ * @brief Intresting method, just re-arrange the filters seems speed up a lot
+ * even faster than the manual coded SSE on AMD K-8 (Athlon II X4 630)
+ * */
+void conv_alg2(const float * restrict a, int n, const float * restrict f, int m, float * restrict b)
+{
+    for(int j=0; j<m; j+=4) {
+        //for(int i=j+0; i<n; i++)  //split!
+        for(int i=j+0; i<j+3; i++)
+            b[i] += f[j+0]*a[i-j-0];
+
+        //for(int i=j+1; i<n; i++)  //split!
+        for(int i=j+1; i<j+3; i++)
+            b[i] += f[j+1]*a[i-j-1];
+
+        //for(int i=j+2; i<n; i++)  //split!
+        for(int i=j+2; i<j+3; i++)
+            b[i] += f[j+2]*a[i-j-2];
+
+        for(int i=j+3; i<n; i++) {
+            b[i] += f[j+0]*a[i-j-0];
+            b[i] += f[j+1]*a[i-j-1];
+            b[i] += f[j+2]*a[i-j-2];
+            b[i] += f[j+3]*a[i-j-3];
+        }
+    }
+}
+
 void conv_opsse(const float * restrict a, int n, const float * restrict f, int m, float * restrict b)
 {
     //j=0,4,8
@@ -15,7 +43,6 @@ void conv_opsse(const float * restrict a, int n, const float * restrict f, int m
     //  b[i] += f[1]*a[i-1];
     //
     //note must pre-know m, here we know m is 12!
-#ifdef XXXXXXXXXXXXX 
     __m128 fi[3], ai, bi;
     for(int j=0; j<4; j++) {
         for(int k=0; k<3 /*m/4*/; k++) {
@@ -27,30 +54,6 @@ void conv_opsse(const float * restrict a, int n, const float * restrict f, int m
                 _mm_storeu_ps(b+i, bi);
             }
         }
-    }
-#endif
-
-    for(int j=0; j<m; j+=4) {
-        //for(int i=j+0; i<n; i++)  //split!
-        for(int i=j+0; i<j+3; i++)
-            b[i] += f[j+0]*a[i-j-0];
-        for(int i=j+3; i<n; i++)
-            b[i] += f[j+0]*a[i-j-0];
-
-        //for(int i=j+1; i<n; i++)  //split!
-        for(int i=j+1; i<j+3; i++)
-            b[i] += f[j+1]*a[i-j-1];
-        for(int i=j+3; i<n; i++)
-            b[i] += f[j+1]*a[i-j-1];
-
-        //for(int i=j+2; i<n; i++)  //split!
-        for(int i=j+2; i<j+3; i++)
-            b[i] += f[j+2]*a[i-j-2];
-        for(int i=j+3; i<n; i++)
-            b[i] += f[j+2]*a[i-j-2];
-
-        for(int i=j+3; i<n; i++)
-            b[i] += f[j+3]*a[i-j-3];
     }
 }
 

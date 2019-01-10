@@ -39,9 +39,11 @@ void conv_opdeci(const float * restrict a, int n, const float * restrict f, int 
 }
 
 void (*algorithm_func[])(const float*, int, const float*, int, float*)
-    = { &conv_basic, 
-        &conv_optimize,
-        &conv_opsse
+    = { &conv_basic,        //0
+        &conv_optimize,     //1
+        &conv_alg2,         //2
+        &conv_alg3,         //3
+        &conv_opsse2        //4
     };
 
 int fir_valid(int n, int m, int algorithm_id, int verbose)
