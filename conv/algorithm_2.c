@@ -30,7 +30,7 @@ void conv_alg2(const float * restrict a, int n, const float * restrict f, int m,
 }
 
 void conv_opsse(const float * restrict a, int n, const float * restrict f, int m, float * restrict b)
-{
+{   //TODO: remove this partially wrong function code, and the next one!
     //j=0,4,8
     //j=0 -> for(int i=0; i<n; i++)
     //  b[i] += f[0]*a[i]
