@@ -11,8 +11,12 @@ static int pyt_check_np_array_1d(PyObject *p, int size, const char *msg)
     nd = PyArray_NDIM((PyArrayObject*)p);
     dims = PyArray_DIMS((PyArrayObject*)p);
     np_type = PyArray_TYPE((PyArrayObject*)p);
-    if(nd!=1 || dims[0]!=size || np_type!=NPY_FLOAT) {
-        printf("%s: %s wrong dimension or size or type!", __func__, msg);
+    if(nd!=1 || dims[0]!=size) {
+        printf("%s: %s wrong dimension or size!", __func__, msg);
+        return -1;
+    }
+    if(np_type!=NPY_FLOAT) {
+        printf("%s: %s wrong type, requires float!", __func__, msg);
         return -1;
     }
     return 0;
@@ -23,7 +27,6 @@ static int pyt_check_np_array_1d(PyObject *p, int size, const char *msg)
  * */
 static PyObject * pyt_toeplitz_mat04(PyObject __attribute__((unused)) *self, PyObject *args)
 {
-    printf("%s:\n", __func__);
     PyObject *obj_a, *obj_f; float *buf_a, *buf_f;
     if(!PyArg_ParseTuple(args, "OO", &obj_a, &obj_f))
         return NULL;
