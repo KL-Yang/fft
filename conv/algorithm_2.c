@@ -7,16 +7,18 @@
  * */
 void conv_alg2(const float * restrict a, int n, const float * restrict f, int m, float * restrict b)
 {
-    for(int j=0; j<m; j+=4) {
-        //for(int i=j+0; i<n; i++)  //split!
+    for(int j=0; j<m; j+=4) 
+    {
+        // This is a strange expansion, j can have m/4 possible value
+        // and there are m/4 value streams!
+        // should be able to rewrite as fixed 4 stream!
+
         for(int i=j+0; i<j+3; i++)
             b[i] += f[j+0]*a[i-j-0];
 
-        //for(int i=j+1; i<n; i++)  //split!
         for(int i=j+1; i<j+3; i++)
             b[i] += f[j+1]*a[i-j-1];
 
-        //for(int i=j+2; i<n; i++)  //split!
         for(int i=j+2; i<j+3; i++)
             b[i] += f[j+2]*a[i-j-2];
 
@@ -29,6 +31,7 @@ void conv_alg2(const float * restrict a, int n, const float * restrict f, int m,
     }
 }
 
+#ifdef XXXXXXXXXXXXX
 void conv_opsse(const float * restrict a, int n, const float * restrict f, int m, float * restrict b)
 {   //TODO: remove this partially wrong function code, and the next one!
     //j=0,4,8
@@ -89,5 +92,4 @@ void conv_opsse2(const float * restrict a, int n, const float * restrict f, int 
             }
     }
 }
-
-
+#endif
